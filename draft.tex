@@ -486,41 +486,23 @@ TSN, Performance Analysis, Machine Learning,
 \section {Background}
 TSN employs different standards that are beriefly reviewed here in order to understand the flow control within a node of a TSN network. Reader interested in a more detailed survery can consult \cite {ULL}.
 \subsection{TSN Concepts}
-TSN are a set of standards that define and extend the data link layer protocols to guarantee low latency, jitter and low loss in a network of IEEE 802.1 bridges. An IEEE 802.1 bridge(s) is any network node that happen to use IEEE 802.1 specification for data communication in between them, it is referred to as a bridge(s) from hereinafter. TSN standards cover different aspect of data transmission in a network that ensures reliable communication with ULL, low jitter and low loss of packets. The following section provides a brief overview of each aspect of such a communication, and their corresponding TSN standards, in a network of bridges.
+A unicast or multicast connection from one end station (talker) to another end station (listener) is called as a \emph {flow}, or a \emph {stream}.
 
-A unicast or multicast connection from one end station (talker) to another end station (listener) is called as a flow, or a stream. In TSN, the flow is identified by the Priority Code Point (PCP) field and VLAN ID (VID) within the ethernet header.
-
-\subsubsection{Flow Synchronization}
-In order to incorporate Quality of Service (QoS) such as latency on the traditional ethernet communication, TSN incorporates a network wide precise time synchronization. TSN standard IEEE 802.1AS outlines different protocols to achieve precise time synchronization in time aware bridges. The synchronization is achieved by employing generic Precision Time Protocol (gPTP), which is a message passing protocol, that establishes: 1) master slave hierarchy (such as Clock Master (CM), Clock Slave (CS)) and 2) synchronization operations within a time aware network of bridges. The clocks are synchronized with respect to a Grand Master (GM) Clock which is selected by Best Master Clock Algorithm (BCMA). The gPTP protocol incorporates link latency in between a CM and a CS while synchronizing time with respect to the GM in a hierarchy.
-
-IEEE 802.1AS-REV introduces new features on top of the existing IEEE 802.1AS standard.
-\subsubsection{Flow Management}
-This paper primarily focusses on performance analysis of Flow Control aspect of TSN, however, this section briefly describes flow management for the sake of completeness.
-
-Flow Management in general deals with the node discovery and end to end path(s) management in a network. 
-
-For node discovery and node configuration TSN has published a standard, IEEE 802.1Qcp, which utilizes YANG data model for periodic status reporting and configuration of nodes.
-
-For end to end flow management, IEEE 802.1Qat is standardized by TSN TG. The standard manages the flow based on the flow resource requirements and the available network resources. It also provides capability to reserve the network resources. IEEE 802.1Qat Stream Reservation Protocol (SRP) makes use of Multiple Registration Protocol (MRP) to register and identify different streams. There are other TSN standards such IEEE 802.1Qcc, IEEE 802.1CS and Resource Allocation Protocol that are dedicated to flow management along with resource allocation within a network.
+In \cite{ULL}, the TSN standards are classified under properties of the flow, such as flow synchronization, flow management, flow control and flow integrity. Performance analysis or schedulability although considers different standards associated with the flow holistically but it is more focussed on standards associated with the flow control. In the following we take a brief look on TSN flow control.
 \subsubsection{Flow Control}
-The flow control in general deals with the schedule of the flows in order to comply with the QoS requirements such as latency and bandwidth. There are different standards that play their role in scheduling different classes of traffic in a TSN. 
+\begin{figure}
+\centering
+\includegraphics[width=3.5in]{TSNFlowControl}
+\caption{Flow control at an output port employing TSN CBS and TAS with and without preemption}
+\label{TSN_FlowControl}
+\end{figure}
+The flow control in general deals with the schedule of the flows in order to comply with the QoS requirements primarily latency. There are different standards that play their role in scheduling different classes of traffic in a TSN. 
 
-IEEE 802.1Qav deals with queuing and forwarding of time sensitive streams. The standard divides the time sensitive traffic in to two classes i-e Class A (tight Delay Bound) and Class B (Lose Delay Bound). It also employs Credit Based Shaper (CBS) in order to avoid starvation of Best Effort (BE) traffic that does not have delay bound. CBS is a credit-based mechanism that only allows a stream to transmit if it has non-zero, positive credit. The CBS is governed by idle slope and send slope. The CBS of a particular class is increased by idle slope if there is at least one frame (of that class) in waiting and is decreased by send slope during the transmission.
+IEEE 802.1Qav \cite{IEEE802.1Qav} deals with queuing and forwarding of time sensitive streams. The standard divides the time sensitive traffic in to two classes i-e Class A (tight Delay Bound) and Class B (Lose Delay Bound). It also employs Credit Based Shaper (CBS) in order to avoid starvation of Best Effort (BE) traffic that does not have delay bound. CBS is a credit-based mechanism that only allows a stream to transmit if it has non-zero, positive credit. The CBS is governed by idle slope and send slope. The CBS of a particular class is increased by idle slope if there is at least one frame (of that class) in waiting and is decreased by send slope during the transmission.
 
-It is pertinent to mention that above standard is still relevant when talking about Ethernet audio/video bridging (AVB) standards. However, following standards summarized here are exclusive to TSN.
+Time Aware Shaper (TAS) \cite{IEEE802.1Qbv} make use of Gate Controlled List (GCL) for a queue and it make use of global clock synchronization \cite{IEEE802.1AS}. GCLs dictate opening and closing of the gate for each queue of output port in a bridge. The gate is opened for low priority traffic if it can be closed before transmission of TAS queues. The timer period of no-activity at the gate before time critical frame is transmitted is referred to as guard band.
 
-In order to accommodate more stringent latency requirement, TSN has proposed a Time-Aware Shaper (TAS) in IEEE 802.1Qbv. TAS make use of Gate Controlled List (GCL) for a queue and it make use of global clock synchronization as discussed earlier. Gate Control Entries (GCEs) in GCL dictate opening and closing of the gate for each queue of output port in a bridge. The GCL are created offline and hence ensure deterministic latency. The GCL are cyclic and are repeated after a certain time period. The gate is opened for low priority traffic if it can be closed before transmission of TAS queues. The timer period of no-activity at the gate before time critical frame is transmitted is referred to as guard band. Needless to say, guard band has an overhead over rest of the traffic.
-IEEE 802.1Qbu introduces low priority traffic frame preemption with an overhead. The MAC layer at egress port is divided in to two MAC interfaces, preemptible MAC (pMAC) and express MAC (eMAC). The frames assigned to pMAC can be preempted by eMAC which then resumed after transmission of an express frame. The fragmented frames are then assembled at the MAC layer of the receiving port while the bridge then process completed frames. The guard band here gets reduced to the shortest low priority frame fragment and the overhead.
-
-IEEE 802.1Qch introduces Cyclic Queuing and Forwarding (CQF). The CQF also known as Peristaltic Shaper (PS) as method to synchronize enqueue and dequeue operations irrespective of network topology. 
-
-IEEE 802.1Qcr introduces Asynchronous Traffic Shaper (ATS). ATS is basically based on urgency based scheduler (UBS).
-\subsubsection{Flow Integrity}
-Flow Integrity categorizes standards that ensure reliable transmission amidst link failures and changed configurations.
-
-IEEE 802.1CB is a standalone standard that sends redundant frames across disjoint network paths to ensure reliability. The redundant frames are then discarded.
-
-IEEE 802.1Qca allows for Path Control and Reservation (PCR) and IEEE 802.1Qci introduces Per-Stream Filtering and Policing (PSFP) which prevents traffic overload conditions.
+IEEE 802.1Qbu \cite{IEEE802.1Qbu} introduces low priority traffic frame preemption with an overhead. The guard band here gets reduced to the shortest low priority frame fragment.
 
 \section {Analysis}
 As discussed, TSN employs broad range of standards aimed at different use-cases with stringent latency requirements. In the flow control in order to schedule a packet dynamically, the scheduling entity needs to determine the schedulability of the frame i-e the latency of scheduled packet should be less than the worst case latency for the traffic. In the presence of multitude TSN standards at a node the analysis to determine the schdulability becomes involved. In this section, we review three different techniques aimed at the timing analysis primarily latency of dynamic traffic of a network.
