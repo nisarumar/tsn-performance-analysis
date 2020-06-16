@@ -481,31 +481,36 @@ TSN, Performance Analysis, Machine Learning,
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart {T}{h}e latency requirement for industrial applications are of the order of a few millisecond, traditional networks, however, have latency of tens of millisecond \cite{LATENCY}.  Time Sensitive Networking (TSN) task group \cite{TSN} is aimed at standardizing Ultra-Low Latency (ULL) network stack on the standard ethernet interface, in order to incorporate real-time awarness on to an otherwise time agnostic ethernet data link layer protcols. There is a need of comprehensive timing analysis of such protcols to determine schedulability of dynamic time-sensitive traffic in a TSN.  There are several approaches that have been explored in order to provide the scheduling entity with the knowledge on the schedulability of a certain traffic. These methods can be broadly categorized in to two categories, mathematical based approach and simulation based approach. Mathematical approaches formulate a time aware mathematical model of a TSN protocol in order to compute latency and other characterstics such as maximum buffer size of scheduled traffic given the network traffic scenario and topology. A simulation model mimics the behaviour of the real system through a set of rules. Simulation based approach has several drawbacks such as it does not usually show the worst-case latencies and design space exploration is cumbersome. In section II we review TSN standards.  In section III we review two mathematical models primarily for Audio Video Bridging (AVB) traffic in a TSN network. Furthermore, we also review a Machine Learning (ML) based approach to determine schedulability of AVB traffic.
+\IEEEPARstart {T}{h}e latency requirement for industrial applications are of the order of a few millisecond, traditional networks, however, have latency of tens of millisecond \cite{LATENCY}.  Time Sensitive Networking (TSN) task group \cite{TSN} is aimed at standardizing Ultra-Low Latency (ULL) network stack on the standard ethernet interface, in order to incorporate real-time awarness on to an otherwise time agnostic ethernet data link layer protcols. There is a need of comprehensive timing analysis of such protcols to determine schedulability of dynamic time-sensitive traffic in a TSN.  There are several approaches that have been explored in order to provide the scheduling entity with the knowledge on the schedulability of a certain traffic. These methods can be broadly categorized in to two categories, mathematical based approach and simulation based approach. Mathematical approaches formulate a time aware mathematical model of a TSN protocol in order to compute latency and other characterstics such as maximum buffer size of scheduled traffic given the network traffic scenario and topology. A simulation model mimics the behaviour of the real system through a set of rules. Simulation based approach has several drawbacks such as it does not usually show the worst-case latencies and design space exploration is cumbersome. 
 
-\section {Background}
-TSN employs different standards that are beriefly reviewed here in order to understand the flow control within a node of a TSN network. Reader interested in a more detailed survery can consult \cite {ULL}.
-\subsection{TSN}
-A unicast or multicast connection from one end station (talker) to another end station (listener) is called as a \emph {flow}, or a \emph {stream}.
-
-In \cite{ULL}, the TSN standards are classified under properties of the flow, such as flow synchronization, flow management, flow control and flow integrity. Performance analysis or schedulability although considers different standards associated with the flow holistically but it is more focussed on standards associated with the flow control. In the following we take a brief look on TSN flow control.
-\subsubsection{Flow Control}
 \begin{figure}
 \centering
 \includegraphics[width=3.5in]{TSNFlowControl}
 \caption{Flow control at an output port employing TSN CBS and TAS with and without preemption}
 \label{TSN_FlowControl}
 \end{figure}
-The flow control in general deals with the schedule of the flows featuring QoS strategies such as static priority scheduling and traffic shaping. There are different standards that play their role in scheduling different classes of traffic in a TSN.
+A unicast or multicast connection from one end station (talker) to another end station (listener) is called as a \emph {flow}, or a \emph {stream}. TSN has defined Time Aware Shaper (TAS) \cite{IEEE802.1Qbv} and Credit Based Shaper (CBS) \cite{IEEE802.1Qav} as means to implement QoS strategies such as static priority scheduling and traffic shaping. Fig \ref{TSN_FlowControl} shows an example of traffic scheduling at an output port. For details, consult \cite{ULL}.
 
-IEEE 802.1Qav \cite{IEEE802.1Qav} deals with queuing and forwarding of time sensitive streams. The standard divides the time sensitive traffic in to two classes i-e Class A (tight Delay Bound) and Class B (Lose Delay Bound). It also employs Credit Based Shaper (CBS) in order to avoid starvation of Best Effort (BE) traffic that does not have delay bound. CBS is a credit-based mechanism that only allows a stream to transmit if it has non-zero, positive credit. The CBS is governed by idle slope and send slope. The CBS of a particular class is increased by idle slope if there is at least one frame (of that class) in waiting and is decreased by send slope during the transmission.
 
-Time Aware Shaper (TAS) \cite{IEEE802.1Qbv} make use of Gate Controlled List (GCL) for a queue and it make use of global clock synchronization \cite{IEEE802.1AS}. GCLs dictate opening and closing of the gate for each queue of output port in a bridge. The gate is opened for low priority traffic if it can be closed before transmission of TAS queues. The timer period of no-activity at the gate before time critical frame is transmitted is referred to as guard band.
+In section II we review two mathematical models primarily for Audio Video Bridging (AVB) traffic in a TSN network. Furthermore, we also review a Machine Learning (ML) based approach to determine schedulability of AVB traffic. In section III we carry out a discussion on the characterstics of the three models in an effort to make a qualitative comparison amongst them.
 
-IEEE 802.1Qbu \cite{IEEE802.1Qbu} introduces low priority traffic frame preemption with an overhead. The guard band here gets reduced to the shortest low priority frame fragment. See Fig. \ref{TSN_FlowControl} for an example of flow control at an output port, gates of each queue are being controlled by GCL.
+%\section {Background}
+%TSN employs different standards that are beriefly reviewed here in order to understand the flow control within a node of a TSN network. Reader interested in a more detailed survery can consult \cite {ULL}.
+%\subsection{TSN}
+%A unicast or multicast connection from one end station (talker) to another end station (listener) is called as a \emph {flow}, or a \emph {stream}.
+%
+%In \cite{ULL}, the TSN standards are classified under properties of the flow, such as flow synchronization, flow management, flow control and flow integrity. Performance analysis or schedulability although considers different standards associated with the flow holistically but it is more focussed on standards associated with the flow control. In the following we take a brief look on TSN flow control.
+%\subsubsection{Flow Control}
+%The flow control in general deals with the schedule of the flows featuring QoS strategies such as static priority scheduling and traffic shaping. There are different standards that play their role in scheduling different classes of traffic in a TSN.
+%
+%IEEE 802.1Qav \cite{IEEE802.1Qav} deals with queuing and forwarding of time sensitive streams. The standard divides the time sensitive traffic in to two classes i-e Class A (tight Delay Bound) and Class B (Lose Delay Bound). It also employs Credit Based Shaper (CBS) in order to avoid starvation of Best Effort (BE) traffic that does not have delay bound. CBS is a credit-based mechanism that only allows a stream to transmit if it has non-zero, positive credit. The CBS is governed by idle slope and send slope. The CBS of a particular class is increased by idle slope if there is at least one frame (of that class) in waiting and is decreased by send slope during the transmission.
+%
+%Time Aware Shaper (TAS) \cite{IEEE802.1Qbv} make use of Gate Controlled List (GCL) for a queue and it make use of global clock synchronization \cite{IEEE802.1AS}. GCLs dictate opening and closing of the gate for each queue of output port in a bridge. The gate is opened for low priority traffic if it can be closed before transmission of TAS queues. The timer period of no-activity at the gate before time critical frame is transmitted is referred to as guard band.
+%
+%IEEE 802.1Qbu \cite{IEEE802.1Qbu} introduces low priority traffic frame preemption with an overhead. The guard band here gets reduced to the shortest low priority frame fragment. See Fig. \ref{TSN_FlowControl} for an example of flow control at an output port, gates of each queue are being controlled by GCL.
 
 \section {Analysis}
-As discussed, TSN employs broad range of standards aimed at different use-cases with stringent latency requirements. In the presence of multitude of TSN standards the analysis to determine the schdulability becomes involved. In this section, we review three different techniques aimed at the timing analysis of dynamic traffic of a network.
+As discussed, TSN employs broad range of standards aimed at different use-cases with stringent latency requirements. In the presence of multitude of TSN standards the analysis to determine the schedulability becomes involved. In this section, we review three different techniques aimed at the timing analysis of dynamic traffic of a network.
 
 \subsection {ML Based Analysis}
 The methodology presented in \cite{ML} significantly differs from the other techniques discussed here, it does not explore underlying timing analysis to determine schedulability of a new configuration rather it makes decision based on its similarity with precomputed configurations.
@@ -523,63 +528,52 @@ A generic topology of network is given for which three classes of traffic is sch
 
 In the ML model developed in \cite{ML}, following five features (D=5) of a configuration are selected based on the empirical results: the number of critical flows, the number of audio flows, the number of video flows, the maximum load of the network and Gini Index. Gini Index \cite{GINI} is a quantitative characterization of unbalancedness of link loads. The decision sought from the model is binary i-e if a given point in a D dimensional space connotes to either a feasible or an infeasible configuration.
 \subsubsection{Results}
-The training data for each solution is generated by labelling randomly generated data of the given topology by the results of `accurate analysis' \cite{8,9,37} which are considered to be 100\% accurate. A training data set of N=5200 was deemed optimum.
+The training data for each solution is generated by labelling randomly generated data of the given topology by the results of `precise analysis' \cite{8,9,37} which are considered to be 100\% accurate. A training data set of N=5200 was deemed optimum.
 The overall accuracy of the model reduces with increasingly complex solution. For the case of FIFO scheduling the model is a bit biased towards infeasible predictions. The reason behind that is most of the training data set contained not feasible solutions.
-The accuracy of the model is worst than `approximate' analysis on average, there is a significant difference of computation time only for the case $10^6$ TSN configurations.
+The accuracy of the model is worst than `approximate' analysis on average.
 %The figure 6 in \cite{ML} shows the comparison of the performance of ML model against the “approximate” and “accurate” analysis in the case of Manual Scheduling, the accuracy of the model is slightly worse than the two other two analysis. However, there is a significant difference of computation time only for the case 10\^ 6 TSN configurations.
 %The table 3 of \cite{ML} summarizes the accuracy result and make a comparison against the other two analyses. The interesting point to note is that the analyses do not yield False Positive Rate as opposed to the ML model, which might indicate potential room of improvement in the Approx. analysis as it is pessimistic. For the case of CP8 there is an improvement of overall accuracy in the case of ML model
-\subsubsection{Conclusion}
-The paper was premised around infeasibility of computational time in the case of accurate analysis however the choice of ML model is not consistent with the premise, since the prediction time of the model (complexity of the order of O(NKD)) will increase linearly with the training data set.
-Another potential improvement could be feature selection, there is no evidence of different features selection for different schedulability in the paper, as indicaed earlier the accuracy has been degraded with more complicated solution. Perhaps different features selection for each solution would customize the characterization of a configuration with respect to that solution and may drive the overall accuracy higher.
-
-Furthermore, it does not provide a worst-case estimate on the latencies which remains a major draw back even for a relatively accurate model. As it does not guarantee a worst-case latency.
-
 \subsection {Network Calculus Based Analysis}
-Network calculus is a toolset that is used in deterministic networking to compute bound on queuing, delays, buffers etc. In this paper \cite{NC} Network Calculus is used to derive an upper bound on the latency of AVB flow of TSN, which can then be used to ascertain shcedulability of the traffic.
-\subsubsection {Network Calculus Background}
-\begin{figure}
-\centering
-\includegraphics[width=3.5in]{NC_Background}
-\caption{Arrival and Departure Functions at an arbitrary node}
-\label{NC_Background}
-\end{figure}
-In network calculus, a system is characterized by two important functions that are arrival function $R(t)$ and departure function $R^*(t)$ as shown in the figure \ref{NC_Background}. The arrival function $R(t)$ is bounded by an arrival curve $\alpha$, which essentially is a limit on the incoming flow of the data. Similarly departure function $R^*(t)$ is bounded by a service curve $\beta$. The backlog $B(t)$ is simply a subtraction of arrival function $R(t)$ and departure function$ R^*(t)$  at a given point in time. The latency is bounded by maximum horizontal deviation between the graphs of arrival function and departure function as shown in the figure \ref{NC_Background}
+Network calculus (NC) is a toolset that is used in deterministic networking to compute bound on queuing, delays, buffers etc. In this paper \cite{NC} Network Calculus is used to derive an upper bound on the latency of AVB flow of TSN, which can then be used to ascertain shcedulability of the traffic.
+%\subsubsection {Network Calculus Background}
+%\begin{figure}
+%\centering
+%\includegraphics[width=3.5in]{NC_Background}
+%\caption{Arrival and Departure Functions at an arbitrary node}
+%\label{NC_Background}
+%\end{figure}
+%In network calculus, a system is characterized by two important functions that are arrival function $R(t)$ and departure function $R^*(t)$. The arrival function $R(t)$ is bounded by an arrival curve $\alpha$, which essentially is a limit on the incoming flow of the data. Similarly departure function $R^*(t)$ is bounded by a service curve $\beta$. The backlog $B(t)$ is simply a subtraction of arrival function $R(t)$ and departure function$ R^*(t)$  at a given point in time. The latency is bounded by maximum horizontal deviation between the graphs of arrival function and departure function.
 
-The paper primarily derives expressions for arrival and service curve in order to derive a bound on arrival and departure function which then can be used to compute latency of a particular 
-flow.
+%The paper primarily derives expressions for arrival and service curve in order to derive a bound on arrival and departure function which then can be used to compute latency of a particular 
+%flow.
 \subsubsection {Model}
-The worst case analysis for an AVB traffic flow in presence of TT traffic is carried out by calculating the arrival and service curves of the flow. As TT traffic takes priority over any AVB flow, the paper ingeniously makes use of the arrival curves of TT traffic in order to compute service curve of the AVB flow. This makes sense because when a node is not engaged in TT traffic and credit of the particular flow is positive only then the traffic of that flow is scheduled at an output port.
+The worst case analysis for an AVB traffic flow in presence of Time Triggered (TT) traffic is carried out by calculating the arrival and service curves of the flow. Arrival and service curves are functions that bound arrival and departure process respectively, for details \cite{NCBackground}. As TT traffic takes priority over any AVB flow, the paper ingeniously makes use of the arrival curves of TT traffic in order to compute service curve of the AVB flow. This makes sense because when a node is not engaged in TT traffic and credit of the particular flow is positive only then the traffic of that flow is scheduled at an output port.
 \begin{figure}
 \centering
 \includegraphics[width=3.5in]{NC_TT}
 \caption{An example of scheduled TT traffic at an output port h }
 \label{NC_TT}
 \end{figure}
-Since TT traffic is scheduled offline assuming in a periodic fashion as show in figure \ref{NC_TT}, this period is referred to as hyperperiod, the arrival curve for TT traffic of a particular port $h$ would simply be the summation of the bits transferred in each TT traffic window in a hyperperiod. The equation below summarizes the intuition:
-\begin{equation}
-\label{ttalpha}
-\alpha^h_{TT,i}(i)=\sum_{j=i}^{i+N^h-1} L_j^h.C.\Bigg \lceil \frac{t-o_{j,i}^h}{\rho_{GCL}^h}\Bigg \rceil
-\end{equation}
-The equation represents an aggregate of arrival curves where each arrival curve is with reference to each TT traffic window.
+Since TT traffic is scheduled offline assuming in a periodic fashion as show in figure \ref{NC_TT}, this period is referred to as hyperperiod, the arrival curve for TT traffic of a particular port $h$ would simply be the summation of the bits transferred in each TT traffic window in a hyperperiod.
+%\begin{equation}
+%\label{ttalpha}
+%\alpha^h_{TT,i}(i)=\sum_{j=i}^{i+N^h-1} L_j^h.C.\Bigg \lceil \frac{t-o_{j,i}^h}{\rho_{GCL}^h}\Bigg \rceil
+%\end{equation}
+%The equation represents an aggregate of arrival curves where each arrival curve is with reference to each TT traffic window.
 
-In the case of absence of IEEE  802.1Qbu, i-e no preemption of the low priority frames, the guard period needs to be catered to in the arrival curve. For the worst case the length of guard band would be either the maximum transmission time of AVB frames or just idle period if that is shorter than the aforementioned time period. Each guard band is appended in front of each TT traffic window. Following the same logic as before, the guards bands can be nicely assimilated in to the equation by extending and adjusting the time windows of TT traffic by their corresponding guard bands as captured in the equation of arrival curve for GB and TT given by as follows:
-\begingroup\makeatletter\def\f@size{8}\check@mathfonts
-$$\alpha^h_{GB + TT,i}(i)=\sum_{j=i}^{i+N^h-1} (L_j^h+L_{GB,j}^h).C.\Bigg \lceil \frac{t-o_{j,i}^h+L_{GB,j}^h-L_{GB,i}^h}{\rho_{GCL}^h}\Bigg \rceil$$\endgroup
+In the case of absence of IEEE  802.1Qbu, i-e no preemption of the low priority frames, the guard period needs to be catered to in the arrival curve. For the worst case the length of guard band would be either the maximum transmission time of AVB frames or just idle period if that is shorter than the aforementioned time period. Each guard band is appended in front of each TT traffic window. Following the same logic as before, the guards bands can be thought of as an extension of TT windows, since no traffic is scheduled within that time frame.
+%\begingroup\makeatletter\def\f@size{8}\check@mathfonts
+%$$\alpha^h_{GB + TT,i}(i)=\sum_{j=i}^{i+N^h-1} (L_j^h+L_{GB,j}^h).C.\Bigg \lceil \frac{t-o_{j,i}^h+L_{GB,j}^h-L_{GB,i}^h}{\rho_{GCL}^h}\Bigg \rceil$$\endgroup
 
 Now, considering an AVB flow of class $M$, an interval $\Delta t$ at an output port $h$ can be broken down as: $\Delta t =\Delta t^+ + \Delta t^- + \Delta t^0$ where $\Delta t^+$ refers to the time spent in waiting, $\Delta t^-$ is the time duration of the transmission and $\Delta t^0$ refers to the time duration of TT and GB windows. As service curve is a bound on the departure function, it can be well characterized by bits served in $\Delta t^-$. This knowledge along with arrival curves of the TT and GB windows help derive the service curve for the AVB flow of class M.
 
-The arrival curves of the AVB flow are derived by the characteristics of the traffic associated with that flow  and is expressed as summation of the bursts, $\sigma$, associated with class $M$ in an output port $h$ and their long-term rate of arrival, $\rho$, expressed as: 
-\begin{equation}
-\label{avbalpha}
-\alpha^h_{AVB\_M}(t)=\sum_{\uptau_{AVB\_M_k\in h}}\sigma_{AVB\_M_k}^h+ \sum_{\uptau_{AVB\_M_k\in h}} \rho_{AVB\_M_k}^h.t
-\end{equation}
-As discussed earlier, the maximum horizontal deviation of arrival and service curve of an output port $h$ draws an upper bound on the latency, $D_{AVB\_M_k,i}^h$. The arrival curve of subsequent nodes can be estimated by summing the arrival curve of the current node with upper bound of latency, D, for that node. Since service curve is dependent on reference TT windows, $i$, this yield multiple upper bounds for the latency of the flow $\uptau_{AVB\_M_k}$, the worst-case upper bound is the maximum latency, $ \max_{i} D_{AVB\_M_k,i}^h$ for the output port $h$.
+The arrival curve of the AVB flow is just a summation of the bursts arrived at a node at a given point in time and their long-term rate of arrival.
+%\label{avbalpha}
+%\alpha^h_{AVB\_M}(t)=\sum_{\uptau_{AVB\_M_k\in h}}\sigma_{AVB\_M_k}^h+ \sum_{\uptau_{AVB\_M_k\in h}} \rho_{AVB\_M_k}^h.t
+%\end{equation}
+The maximum horizontal deviation of arrival and service curve of an output port $h$ draws an upper bound on the latency. The arrival curve of subsequent nodes can be estimated by summing the arrival curve of the current node with upper bound of latency for that node.
 \subsubsection{Results}
-The paper has incorporated the analysis on a topology of 31 End Switches (ES), 15 SWs and 39 routers connected by dataflow links transmitting at 1 Gbps. In order to show the scalability of the analysis, the Worst Case Delays (WCD) of 34 AVB flows are compared against 15 and 100 TT flows. For each AVB flow the WCD in presence of 100 TT flows was greater than that of 15 TT flow, which makes sense since the service curve of AVB flow reduces with an increased value of arrival curve of TT and GB.
-
-Similarly, the analysis goes on to show that WCD in the case of non-premption of AVB flows are always greated than premption mode due to the penalty incurred by GB. The analysis also noted that the WCD of AVB flow reduce with an increased value of idle slope. However, the degree of decrease in WCD reduces at a certain point yielding diminished returns. The analysis also explore the effect of the routing path in a TSN topology and discovers significant impact of routing on the WCD of AVB flows.
-\subsubsection{Conclusion}
-The paper derives expression for WCD of AVB flows in the presence of TT traffic by empoying NC toolset. The analysis captures the behaviour of a TSN traffic in a node and results shown are consistent with that behaviour. The analysis presented in the paper is comprehensive as it incorporates TT traffic along with premption and non-premption mode. The analysis claims to remove the pessismism of the results obtained in \cite{NCCOMPARE}. 
+The results derived for AVB analysis are shown to be scalable in presence of TT flows which are increased from 15 to 100. The analysis works for preemption where the computed Worst Case Delays (WCDs) are slightly better. The analysis also noted that the WCD of AVB flow reduce with an increased value of idle slope, naturally. The analysis also explore the effect of the routing path in a TSN topology and discovers significant impact of routing on the WCD of AVB flows.
 
 \subsection {Compositional Performance Analysis (CPA) of AVB Ethernet Traffic}
 This technique \cite{CPA} differs from the NC one primarily because of the mathematical approach towards tackling the timing analysis of the network traffic. This paper makes use of CPA toolset to derive an upper bound on the latency of a traffic stream of class AVB.
@@ -595,22 +589,19 @@ B_i^+(q,a_i^q)\leq t_{transfer}(q)+I_{LPB}+I_{SPB}(a_i^q)+\\
 \end{align*}
 
 where: $t_{transfer}(q) = q.C_i^+$ is maximum tranfer time for back to back q events and $C$ is the time it takes for a frame to transmit at an output port. $I_{LPB}=\max\limits_{j\in lp(i)} C_j^+$ is worst-case time taken by a lower priority task that just started execution before arrival of the q-event. $I_{SPB}(a_i^q)=\sum\limits_{j\in sp(i)} (\upeta_j^+(a_i^q).C_j^+)$ is worst-case time taken by same priority events of task $\uptau_j$ arrived until arrival time of q-event of $\uptau_i$ given by $a_i^q$. $I_{HPB}(B_i^+(q,a_i^q))=\sum\limits_{j\in hp(i)} (\eta_j^+(B_i^+(q,a_i^q)-C_i^+).C_j^+)$ is worst-case time taken by a high priority task, $\uptau_j$, following the same logic as same priority task however the subtraction of $C_i^+$ is due to the non-premption nature of onging low priority task, $I_{TSB}$ is worst-case time taken by traffic shaper or insufficient credit which is dependent on other terms of the expression as blocking of $\uptau_i$ due to any reason would result in an increase of the credit. For details consult \cite{CPA}
-The upper bound on latency, $l_{p}^+$, of stream $p$ is given by the summation of the worst-case response time, $R_i^+$, at each node along the path. The derived equation is as follows:
-\begin{equation*}
-l_p^+ \leq \delta^-_{first(p)}(s) + \sum_{j \in Tasks(p)} R_j^++ O_{routing}(p)
-\end{equation*}
-where $ \delta^-_{first(p)}(s)$ is the worst-case arrival interval between the last and the first frame and $O_{routing}$ is the path delay associated between the nodes. In order to compute worst-case response time, $R_i^+$, at each node one has to find the worst-case time interval between the foremost q event arrival and the last q event departure of the same busy time characterized by $R_i^+=\max\limits_{q\in Q_i}\big\{ \max\limits_{a_i^q\in A_i}\{B_i^+(q,a_i^q)-a_i^q\}\big\}$. Different values of arrival times $a_i^q$ of qth event have to be considered which in return affect the busy time, leading to fixed point iterations.
-
-So far in the analysis, the effect of traffic shaper has not been incorporated into the calculation of arrival times of the events, incorporating such could reduce interference of same priority tasks vying for the same resource. For that, an upper bound on the traffic shaped by a shaper on a resource is computed which is then incorporated in to the output event model for each task. For detailed derivation consult \cite{CPA}.
+The upper bound on latency, $l_{p}^+$, of stream $p$ is given by the summation of the worst-case response time, $R_i^+$, at each node along the path. In order to compute worst-case response time, $R_i^+$, at each node one has to find the worst-case time interval between the foremost q event arrival and the last q event departure of the same busy time characterized by $R_i^+=\max\limits_{q\in Q_i}\big\{ \max\limits_{a_i^q\in A_i}\{B_i^+(q,a_i^q)-a_i^q\}\big\}$. 
+So far in the analysis, the effect of traffic shaper has not been incorporated into the calculation of arrival times of the events. For that, an upper bound on the traffic shaped by a shaper on a resource is computed which is then incorporated in to the output event model for each task. For detailed derivation consult \cite{CPA}.
 \subsubsection {Results}
-Having developed the model for AVB traffic, the paper goes on to evaluate the model on different topologies by comparing the worst-case latencies of AVB traffic with that of strict priority. A general trend of much higer latencies in the case of AVB are observed which is explainable due to the maximum transmission bound imposed by shaper credit. It was seen that setting the idle slope of AVB traffic 31 times than the required bandwidth achieves the same latency as of strict priority. It was noted that in the case of linear topology the rate of increase of latencies with respect to the number of nodes was much higher than that observed in star topology. This is due to the intermediate shapers at each node that accumulated the effect of shaper at the output node.
-\subsubsection {Conclusion}
-The paper makes use of CPA analysis to compose a model of AVB ethernet traffic and evaluates the result in different topologies. The model is shown to be scalable with the plausible results. 
+A general trend of much higer latencies in the case of AVB are observed which is explainable due to the maximum transmission bound imposed by shaper credit. It was seen that setting the idle slope of AVB traffic 31 times than the required bandwidth achieves the same latency as of strict priority. It was noted that in the case of linear topology the rate of increase of latencies with respect to the number of nodes was much higher than that observed in star topology. This is due to the intermediate shapers at each node that accumulated the effect of shaper at the output node.
 
-However, with respect to TSN standards the analysis leaves much to be desired as it does not: 1) incorporate premption of low priority frames as standarized in IEEE 802.1Qbu, 2) explicitly include effect of TT traffic on to the credit shaper.
+\section{Discussion and Conclusion}
+The ML paper \cite{ML} was premised around infeasibility of computational time for the case of NC based methods however the choice of ML model could have been improved as improvement in the result is only significant for the configurations $\geq 10^5$. Furthermore, it does not provide a worst-case estimate on the latencies which remains a major draw back even for a relatively accurate model. However, for a large number of configurations it provides better computation time when compared with both the NC based analyses.
 
-\section {Conlcusion}
-We have reviewed TSN standards particularly associated with the flow control. We then discussed three different approaches aimed at  providing the schedulability analysis of AVB traffic flow in a TSN network. We have discussed and compared the underlying mathematical principles of the aforementioned approaches. Furthermore, we also highlighted the shortcomings in the completeness of the analyses with regards to TSN standards.
+The NC based analysis \cite{NC} seems to be the most comprehensive analysis amongst the reviewed techniques. The analysis also claim to provide optimistic results when compared with \cite{NCCOMPARE}, which is definitely a plus for an NC based technique. However, the analysis does not make any reference to the degree of error in the estimate. An estimate on the computational resources and time would also help in determining the applicability of the model.
+
+The CPA analysis \cite{CPA} seems to be incomplete when TSN configurations with preemption are considered. Simplification in modeling of the shaper in the analysis does not explicitly account for the case of two shapers (such as Class A and B) on the same resource. The effect of TT traffic is not evaluated.
+
+In this paper, we have discussed three different approaches aimed at  providing the schedulability analysis of AVB traffic flow in a TSN network. We then discussed different aspects of the model that make them suitable (or not suitable) for the performance analysis of a real-time TSN. 
 %\subsection{Subsection Heading Here}
 %Subsection text here.
 
